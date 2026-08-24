@@ -31,18 +31,3 @@ CREATE TABLE IF NOT EXISTS c2s_mentees.mentees (
 
 INSERT INTO c2s_accounts.users (username, password_hash)
 VALUES ('admin', '$2y$10$Zee62BFr2GFKHLDNCa98MuszvVa5Uu.UZxl6X.D3fdtThNDq0jGhG');
-
-INSERT INTO c2s_mentees.mentees
-    (user_id, mentee_name, status, contact_number, birthday, address, module_lesson, cldp_1, cldp_2, cldp_3, potential_mentor, c2s_101, other_trainings, remarks)
-SELECT id, 'Juan Dela Cruz', 'Active', '09171234567', '2004-03-15', 'Quezon City', 'Module 1 - Lesson 3', 'Completed', 'Ongoing', 'Unenrolled', 'Yes', 'Lesson 2', 'Youth Camp 2025', 'Very consistent in attendance.'
-FROM c2s_accounts.users WHERE username = 'admin';
-
-INSERT INTO c2s_mentees.mentees
-    (user_id, mentee_name, status, contact_number, birthday, address, module_lesson, cldp_1, cldp_2, cldp_3, potential_mentor, c2s_101, other_trainings, remarks)
-SELECT id, 'Maria Santos', 'Active', '09981234567', '2007-08-02', 'Makati City', 'Module 2 - Lesson 1', 'Ongoing', 'Unenrolled', 'Unenrolled', 'No', 'Lesson 1', '', 'On hold due to school schedule.'
-FROM c2s_accounts.users WHERE username = 'admin';
-
-INSERT INTO c2s_mentees.mentees
-    (user_id, mentee_name, status, contact_number, birthday, address, module_lesson, cldp_1, cldp_2, cldp_3, potential_mentor, c2s_101, other_trainings, remarks)
-SELECT id, 'Carlo Reyes', 'Inactive', '09051234567', '2001-01-30', 'Pasig City', 'Module 4 - Lesson 6', 'Completed', 'Completed', 'Completed', 'Yes', 'Completed', 'Life Coaching Seminar 2024', 'Ready to be deployed as mentor.'
-FROM c2s_accounts.users WHERE username = 'admin';

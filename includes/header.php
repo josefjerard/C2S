@@ -13,7 +13,9 @@
         <a href="index.php" class="brand">C2S <span>Mentee Management System</span></a>
         <nav class="nav">
             <span class="nav-user"><?= e($_SESSION['username'] ?? '') ?></span>
-            <a href="create.php" class="btn btn-primary btn-sm">+ Add Mentee</a>
+            <?php if (!is_admin()): ?>
+                <a href="create.php" class="btn btn-primary btn-sm">+ Add Mentee</a>
+            <?php endif; ?>
             <a href="logout.php" class="btn btn-secondary btn-sm">Log Out</a>
         </nav>
     </div>

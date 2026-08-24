@@ -2,6 +2,11 @@
 require_once __DIR__ . '/config.php';
 require_login();
 
+if (is_admin()) {
+    header('Location: index.php');
+    exit;
+}
+
 $errors = [];
 $mentee = [];
 

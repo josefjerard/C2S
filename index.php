@@ -2,6 +2,79 @@
 require_once __DIR__ . '/config.php';
 require_login();
 
+if (is_admin()) {
+    $totalMentees = (int)$db_mentees->query('SELECT COUNT(*) FROM mentees')->fetchColumn();
+
+    $mentorStmt = $db_accounts->prepare('SELECT id, username FROM users WHERE username <> :admin ORDER BY username ASC');
+    $mentorStmt->execute([':admin' => 'admin']);
+    $mentors = $mentorStmt->fetchAll();
+
+    $menteesByMentor = [];
+    foreach ($db_mentees->query('SELECT * FROM mentees ORDER BY mentee_name ASC') as $row) {
+        $menteesByMentor[(int)$row['user_id']][] = $row;
+    }
+
+    $page_title = 'Dashboard';
+    require __DIR__ . '/includes/header.php';
+    ?>
+
+    <div class="stat-grid">
+        <div class="card stat">
+            <span class="stat-value"><?= $totalMentees ?></span>
+            <span class="stat-label">Total Mentees</span>
+        </div>
+        <div class="card stat">
+            <span class="stat-value text-blue"><?= count($mentors) ?></span>
+            <span class="stat-label">Total Mentors</span>
+        </div>
+    </div>
+
+    <?php if (!$mentors): ?>
+        <div class="card empty-note">No mentors registered yet.</div>
+    <?php else: ?>
+        <div class="mentor-list">
+            <?php foreach ($mentors as $mentor): ?>
+                <?php $mentorMentees = $menteesByMentor[(int)$mentor['id']] ?? []; ?>
+                <div class="card mentor-card">
+                    <div class="mentor-head">
+                        <h2 class="mentor-name"><?= e($mentor['username']) ?></h2>
+                        <span class="badge badge-blue"><?= count($mentorMentees) ?> <?= count($mentorMentees) === 1 ? 'mentee' : 'mentees' ?></span>
+                    </div>
+                    <?php if (!$mentorMentees): ?>
+                        <p class="empty-note">No mentees yet.</p>
+                    <?php else: ?>
+                        <div class="table-wrap">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Status</th>
+                                        <th>Module / Lesson</th>
+                                        <th>Remarks</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($mentorMentees as $m): ?>
+                                        <tr>
+                                            <td><?= e($m['mentee_name']) ?></td>
+                                            <td><span class="badge <?= badge_class($m['status']) ?>"><?= e($m['status']) ?></span></td>
+                                            <td><?= e($m['module_lesson'] !== '' ? $m['module_lesson'] : 'Not yet started') ?></td>
+                                            <td class="cell-truncate" title="<?= e($m['remarks']) ?>"><?= e($m['remarks']) ?></td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    <?php endif; ?>
+                </div>
+            <?php endforeach; ?>
+        </div>
+    <?php endif; ?>
+
+    <?php require __DIR__ . '/includes/footer.php';
+    exit;
+}
+
 $search = trim($_GET['q'] ?? '');
 $statusFilter = $_GET['status'] ?? '';
 

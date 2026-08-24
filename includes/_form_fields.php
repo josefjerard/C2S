@@ -32,7 +32,7 @@
         </div>
         <div class="form-group">
             <label for="contact_number">Contact Number</label>
-            <input type="tel" id="contact_number" name="contact_number" inputmode="numeric" pattern="[0-9]*" title="Numbers only" value="<?= e($mentee['contact_number'] ?? '') ?>" maxlength="30">
+            <input type="tel" id="contact_number" name="contact_number" inputmode="numeric" pattern="09[0-9]{9}" title="Must be 11 numbers starting with 09" placeholder="09XXXXXXXXX" value="<?= e($mentee['contact_number'] ?? '') ?>" maxlength="11">
         </div>
         <div class="form-group form-full">
             <label for="address">Address</label>

@@ -481,3 +481,25 @@ tbody tr:hover {
     color: var(--text-muted);
     font-weight: 600;
 }
+
+.mentor-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.mentor-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.mentor-name {
+    font-size: 1.05rem;
+}
+
+.empty-note {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}

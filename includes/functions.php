@@ -58,6 +58,11 @@ function current_user_id(): int
     return (int)($_SESSION['user_id'] ?? 0);
 }
 
+function is_admin(): bool
+{
+    return ($_SESSION['username'] ?? '') === 'admin';
+}
+
 function require_login(): void
 {
     if (!is_logged_in()) {
@@ -205,8 +210,8 @@ function collect_mentee_input(array $post): array
     }
 
     $contact = trim($post['contact_number'] ?? '');
-    if ($contact !== '' && !ctype_digit($contact)) {
-        $errors[] = 'Contact number must contain numbers only.';
+    if ($contact !== '' && !preg_match('/^09\d{9}$/', $contact)) {
+        $errors[] = 'Contact number must be 11 numbers starting with 09.';
     }
 
     $moduleLesson = trim($post['module_lesson'] ?? '');
