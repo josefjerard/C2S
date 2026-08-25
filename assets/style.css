@@ -695,7 +695,7 @@ tbody tr:hover {
     }
 
     .stat-grid {
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: 1fr;
         gap: 8px;
     }
 
@@ -794,7 +794,8 @@ tbody tr:hover {
         flex-direction: column;
     }
 
-    .form-actions .btn {
+    .form-actions .btn,
+    .form-actions form {
         width: 100%;
     }
 
