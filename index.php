@@ -5,13 +5,12 @@ require_login();
 if (is_admin()) {
     $totalMentees = (int)$db_mentees->query('SELECT COUNT(*) FROM mentees')->fetchColumn();
 
-    $mentorStmt = $db_accounts->prepare('SELECT id, username FROM users WHERE username <> :admin ORDER BY username ASC');
-    $mentorStmt->execute([':admin' => 'admin']);
-    $mentors = $mentorStmt->fetchAll();
+    $mentors = array_values(array_filter(load_mentors(), fn(array $m): bool => $m['username'] !== 'admin'));
+    $totalMembers = $totalMentees + count($mentors);
 
-    $menteesByMentor = [];
-    foreach ($db_mentees->query('SELECT * FROM mentees ORDER BY mentee_name ASC') as $row) {
-        $menteesByMentor[(int)$row['user_id']][] = $row;
+    $menteeCounts = [];
+    foreach ($db_mentees->query('SELECT user_id, COUNT(*) AS total FROM mentees GROUP BY user_id') as $row) {
+        $menteeCounts[(int)$row['user_id']] = (int)$row['total'];
     }
 
     $page_title = 'Dashboard';
@@ -27,6 +26,10 @@ if (is_admin()) {
             <span class="stat-value text-blue"><?= count($mentors) ?></span>
             <span class="stat-label">Total Mentors</span>
         </div>
+        <div class="card stat">
+            <span class="stat-value text-green"><?= $totalMembers ?></span>
+            <span class="stat-label">Total Members</span>
+        </div>
     </div>
 
     <?php if (!$mentors): ?>
@@ -34,38 +37,24 @@ if (is_admin()) {
     <?php else: ?>
         <div class="mentor-list">
             <?php foreach ($mentors as $mentor): ?>
-                <?php $mentorMentees = $menteesByMentor[(int)$mentor['id']] ?? []; ?>
                 <div class="card mentor-card">
                     <div class="mentor-head">
-                        <h2 class="mentor-name"><?= e($mentor['username']) ?></h2>
-                        <span class="badge badge-blue"><?= count($mentorMentees) ?> <?= count($mentorMentees) === 1 ? 'mentee' : 'mentees' ?></span>
+                        <h2 class="mentor-name"><a class="mentor-link" href="mentor.php?id=<?= (int)$mentor['id'] ?>"><?= e($mentor['username']) ?></a></h2>
                     </div>
-                    <?php if (!$mentorMentees): ?>
-                        <p class="empty-note">No mentees yet.</p>
-                    <?php else: ?>
-                        <div class="table-wrap">
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>Name</th>
-                                        <th>Status</th>
-                                        <th>Module / Lesson</th>
-                                        <th>Remarks</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php foreach ($mentorMentees as $m): ?>
-                                        <tr>
-                                            <td><?= e($m['mentee_name']) ?></td>
-                                            <td><span class="badge <?= badge_class($m['status']) ?>"><?= e($m['status']) ?></span></td>
-                                            <td><?= e($m['module_lesson'] !== '' ? $m['module_lesson'] : 'Not yet started') ?></td>
-                                            <td class="cell-truncate" title="<?= e($m['remarks']) ?>"><?= e($m['remarks']) ?></td>
-                                        </tr>
-                                    <?php endforeach; ?>
-                                </tbody>
-                            </table>
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <span class="detail-label">Username</span>
+                            <span><?= e($mentor['username']) ?></span>
                         </div>
-                    <?php endif; ?>
+                        <div class="detail-item">
+                            <span class="detail-label">Password</span>
+                            <span><?= e(display_password($mentor['password_plain'])) ?></span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Mentees</span>
+                            <span class="badge badge-blue"><?= $menteeCounts[(int)$mentor['id']] ?? 0 ?> <?= (($menteeCounts[(int)$mentor['id']] ?? 0) === 1) ? 'mentee' : 'mentees' ?></span>
+                        </div>
+                    </div>
                 </div>
             <?php endforeach; ?>
         </div>

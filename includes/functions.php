@@ -79,7 +79,12 @@ function login_user(array $user): void
     $_SESSION['username'] = $user['username'];
 }
 
-function find_user_by_username(PDO $db_accounts, string $username): ?array
+function display_password(?string $plain): string
+{
+    return ($plain !== null && $plain !== '') ? $plain : 'Not recorded';
+}
+
+function find_admin_by_username(PDO $db_accounts, string $username): ?array
 {
     $stmt = $db_accounts->prepare('SELECT * FROM users WHERE username = :username');
     $stmt->execute([':username' => $username]);
@@ -87,14 +92,99 @@ function find_user_by_username(PDO $db_accounts, string $username): ?array
     return $row ?: null;
 }
 
-function create_user(PDO $db_accounts, string $username, string $password): int
+function load_mentors(): array
 {
-    $stmt = $db_accounts->prepare('INSERT INTO users (username, password_hash) VALUES (:username, :password_hash)');
-    $stmt->execute([
-        ':username'      => $username,
-        ':password_hash' => password_hash($password, PASSWORD_DEFAULT),
-    ]);
-    return (int)$db_accounts->lastInsertId();
+    if (!is_file(MENTORS_CSV)) {
+        return [];
+    }
+    $handle = fopen(MENTORS_CSV, 'r');
+    if ($handle === false) {
+        return [];
+    }
+    flock($handle, LOCK_SH);
+    $header = fgetcsv($handle);
+    if ($header === false) {
+        fclose($handle);
+        return [];
+    }
+    $header = array_map(
+        fn(string $col): string => preg_replace('/^\xEF\xBB\xBF/', '', trim($col)),
+        $header
+    );
+    $mentors = [];
+    while (($row = fgetcsv($handle)) !== false) {
+        if ($row === [null]) {
+            continue;
+        }
+        $row = array_map(fn($v): string => trim((string)$v), $row);
+        if (count($row) < count($header)) {
+            $row = array_pad($row, count($header), '');
+        }
+        $mentors[] = array_combine($header, $row);
+    }
+    flock($handle, LOCK_UN);
+    fclose($handle);
+    usort($mentors, fn(array $a, array $b): int => strcasecmp($a['username'], $b['username']));
+    return $mentors;
+}
+
+function save_mentors(array $mentors): void
+{
+    $handle = fopen(MENTORS_CSV, 'c');
+    flock($handle, LOCK_EX);
+    ftruncate($handle, 0);
+    fputcsv($handle, ['id', 'username', 'password_hash', 'password_plain', 'created_at']);
+    foreach ($mentors as $mentor) {
+        fputcsv($handle, [
+            $mentor['id'],
+            $mentor['username'],
+            $mentor['password_hash'],
+            $mentor['password_plain'],
+            $mentor['created_at'],
+        ]);
+    }
+    fflush($handle);
+    flock($handle, LOCK_UN);
+    fclose($handle);
+}
+
+function find_mentor_by_id(int $id): ?array
+{
+    foreach (load_mentors() as $mentor) {
+        if ((int)$mentor['id'] === $id) {
+            return $mentor;
+        }
+    }
+    return null;
+}
+
+function find_mentor_by_username(string $username): ?array
+{
+    foreach (load_mentors() as $mentor) {
+        if (strcasecmp($mentor['username'], $username) === 0) {
+            return $mentor;
+        }
+    }
+    return null;
+}
+
+function create_mentor(string $username, string $password): int
+{
+    $mentors = load_mentors();
+    $nextId = 0;
+    foreach ($mentors as $mentor) {
+        $nextId = max($nextId, (int)$mentor['id']);
+    }
+    $nextId++;
+    $mentors[] = [
+        'id'            => $nextId,
+        'username'      => $username,
+        'password_hash' => password_hash($password, PASSWORD_DEFAULT),
+        'password_plain'=> $password,
+        'created_at'    => date('Y-m-d H:i:s'),
+    ];
+    save_mentors($mentors);
+    return $nextId;
 }
 
 function set_flash(string $type, string $message): void

@@ -13,7 +13,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = trim($_POST['username'] ?? '');
     $password = (string)($_POST['password'] ?? '');
 
-    $user = find_user_by_username($db_accounts, $username);
+    $user = find_admin_by_username($db_accounts, $username);
+
+    if (!$user || !password_verify($password, $user['password_hash'])) {
+        $user = find_mentor_by_username($username);
+    }
 
     if (!$user || !password_verify($password, $user['password_hash'])) {
         $error = 'Invalid username or password.';

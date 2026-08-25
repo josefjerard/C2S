@@ -17,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (!preg_match('/^[A-Za-z0-9_.]{3,30}$/', $username)) {
         $errors[] = 'Username must be 3-30 characters (letters, numbers, dot, underscore).';
-    } elseif (find_user_by_username($db_accounts, $username)) {
+    } elseif (find_admin_by_username($db_accounts, $username) || find_mentor_by_username($username)) {
         $errors[] = 'That username is already taken.';
     }
 
@@ -30,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if (!$errors) {
-        $userId = create_user($db_accounts, $username, $password);
+        $userId = create_mentor($username, $password);
         login_user(['id' => $userId, 'username' => $username]);
         header('Location: index.php');
         exit;

@@ -3,8 +3,14 @@ require_once __DIR__ . '/config.php';
 require_login();
 
 $id = (int)($_GET['id'] ?? 0);
-$stmt = $db_mentees->prepare('SELECT * FROM mentees WHERE id = :id AND user_id = :uid');
-$stmt->execute([':id' => $id, ':uid' => current_user_id()]);
+
+if (is_admin()) {
+    $stmt = $db_mentees->prepare('SELECT * FROM mentees WHERE id = :id');
+    $stmt->execute([':id' => $id]);
+} else {
+    $stmt = $db_mentees->prepare('SELECT * FROM mentees WHERE id = :id AND user_id = :uid');
+    $stmt->execute([':id' => $id, ':uid' => current_user_id()]);
+}
 $mentee = $stmt->fetch();
 
 if (!$mentee) {
@@ -12,6 +18,9 @@ if (!$mentee) {
     header('Location: index.php');
     exit;
 }
+
+$backLink = is_admin() ? 'mentor.php?id=' . (int)$mentee['user_id'] : 'index.php';
+$backLabel = is_admin() ? 'Back to Mentor' : 'Back to List';
 
 $page_title = $mentee['mentee_name'];
 require __DIR__ . '/includes/header.php';
@@ -71,13 +80,16 @@ require __DIR__ . '/includes/header.php';
 </div>
 
 <div class="form-actions">
-    <a href="edit.php?id=<?= (int)$mentee['id'] ?>" class="btn btn-primary">Edit Mentee</a>
-    <form method="post" action="delete.php" onsubmit="return confirm('Delete this mentee?');">
-        <input type="hidden" name="csrf" value="<?= e(csrf_token()) ?>">
-        <input type="hidden" name="id" value="<?= (int)$mentee['id'] ?>">
-        <button type="submit" class="btn btn-danger">Delete</button>
-    </form>
-    <a href="index.php" class="btn btn-secondary">Back to List</a>
+    <?php if (!is_admin()): ?>
+        <a href="edit.php?id=<?= (int)$mentee['id'] ?>" class="btn btn-primary">Edit Mentee</a>
+        <form method="post" action="delete.php" onsubmit="return confirm('Delete this mentee?');">
+            <input type="hidden" name="csrf" value="<?= e(csrf_token()) ?>">
+            <input type="hidden" name="id" value="<?= (int)$mentee['id'] ?>">
+            <button type="submit" class="btn btn-danger">Delete</button>
+        </form>
+    <?php else: ?>
+        <a href="<?= e($backLink) ?>" class="btn btn-secondary"><?= e($backLabel) ?></a>
+    <?php endif; ?>
 </div>
 
 <?php require __DIR__ . '/includes/footer.php'; ?>

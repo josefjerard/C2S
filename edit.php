@@ -2,6 +2,12 @@
 require_once __DIR__ . '/config.php';
 require_login();
 
+if (is_admin()) {
+    set_flash('error', 'Admin accounts have view-only access.');
+    header('Location: ' . ($_SERVER['HTTP_REFERER'] ?? 'index.php'));
+    exit;
+}
+
 $id = (int)($_GET['id'] ?? $_POST['id'] ?? 0);
 $stmt = $db_mentees->prepare('SELECT * FROM mentees WHERE id = :id');
 $stmt->execute([':id' => $id]);

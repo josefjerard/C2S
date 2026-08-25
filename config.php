@@ -10,6 +10,8 @@ define('DB_PASS', '');
 define('DB_ACCOUNTS', 'c2s_accounts');
 define('DB_MENTEES', 'c2s_mentees');
 
+define('MENTORS_CSV', __DIR__ . DIRECTORY_SEPARATOR . 'data' . DIRECTORY_SEPARATOR . 'mentors.csv');
+
 function db_connect(string $dbName): PDO
 {
     return new PDO(
