@@ -17,11 +17,11 @@
             <?php else: ?>
                 <?php foreach ($mentees as $m): ?>
                     <tr>
-                        <td><a class="row-link" href="view.php?id=<?= (int)$m['id'] ?>"><?= e($m['mentee_name']) ?></a></td>
-                        <td><span class="badge <?= badge_class($m['status']) ?>"><?= e($m['status']) ?></span></td>
-                        <td><?= e($m['module_lesson'] !== '' ? $m['module_lesson'] : 'Not yet started') ?></td>
-                        <td><?= e($m['potential_mentor']) ?></td>
-                        <td class="cell-truncate" title="<?= e($m['remarks']) ?>"><?= e($m['remarks']) ?></td>
+                        <td data-label="Name"><a class="row-link" href="view.php?id=<?= (int)$m['id'] ?>"><?= e($m['mentee_name']) ?></a></td>
+                        <td data-label="Status"><span class="badge <?= badge_class($m['status']) ?>"><?= e($m['status']) ?></span></td>
+                        <td data-label="Module / Lesson"><?= e($m['module_lesson'] !== '' ? $m['module_lesson'] : 'Not yet started') ?></td>
+                        <td data-label="Potential Mentor"><?= e($m['potential_mentor']) ?></td>
+                        <td data-label="Remarks" class="cell-truncate" title="<?= e($m['remarks']) ?>"><?= e($m['remarks']) ?></td>
                     </tr>
                 <?php endforeach; ?>
             <?php endif; ?>

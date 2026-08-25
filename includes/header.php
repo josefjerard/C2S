@@ -11,6 +11,10 @@
 <header class="topbar">
     <div class="topbar-inner">
         <a href="index.php" class="brand">C2S <span>Mentee Management System</span></a>
+        <input type="checkbox" id="nav-toggle" class="nav-toggle-input" aria-label="Toggle navigation">
+        <label for="nav-toggle" class="hamburger" aria-label="Toggle navigation">
+            <span></span><span></span><span></span>
+        </label>
         <nav class="nav">
             <span class="nav-user"><?= e($_SESSION['username'] ?? '') ?></span>
             <?php if (!is_admin()): ?>

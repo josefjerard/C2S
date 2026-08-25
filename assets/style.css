@@ -529,3 +529,315 @@ tbody tr:hover {
     color: var(--text-muted);
     font-size: 0.9rem;
 }
+
+/* ── Hamburger (hidden on desktop) ── */
+.nav-toggle-input {
+    display: none;
+}
+
+.hamburger {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    width: 36px;
+    height: 36px;
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 6px;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.hamburger span {
+    display: block;
+    width: 100%;
+    height: 2.5px;
+    background: var(--text);
+    border-radius: 2px;
+    transition: transform 0.25s ease, opacity 0.25s ease;
+}
+
+.hamburger:active {
+    background: var(--gray-bg);
+}
+
+/* Hamburger animated to X when open */
+.nav-toggle-input:checked ~ .hamburger span:nth-child(1) {
+    transform: translateY(7.5px) rotate(45deg);
+}
+.nav-toggle-input:checked ~ .hamburger span:nth-child(2) {
+    opacity: 0;
+}
+.nav-toggle-input:checked ~ .hamburger span:nth-child(3) {
+    transform: translateY(-7.5px) rotate(-45deg);
+}
+
+/* ── TABLET ── */
+@media (max-width: 768px) {
+    .topbar-inner {
+        flex-wrap: wrap;
+        height: auto;
+        padding: 12px 16px;
+        gap: 10px;
+    }
+
+    .hamburger {
+        display: flex;
+    }
+
+    .nav {
+        display: none;
+        width: 100%;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+        padding-top: 8px;
+        border-top: 1px solid var(--border);
+    }
+
+    .nav-toggle-input:checked ~ .nav {
+        display: flex;
+    }
+
+    .nav-user {
+        text-align: center;
+        padding: 4px 0;
+    }
+
+    .nav .btn {
+        width: 100%;
+        text-align: center;
+    }
+
+    .container {
+        padding: 16px 14px;
+    }
+
+    .page-head h1 {
+        font-size: 1.3rem;
+    }
+
+    .stat-grid {
+        grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+        gap: 10px;
+    }
+
+    .stat-value {
+        font-size: 1.5rem;
+    }
+
+    .filter-bar {
+        flex-direction: column;
+    }
+
+    .filter-bar input[type="text"],
+    .filter-bar select {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .form-full {
+        grid-column: 1;
+    }
+
+    .detail-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .form-actions {
+        flex-wrap: wrap;
+    }
+
+    .form-actions .btn {
+        min-width: 0;
+        flex: 1;
+    }
+
+    .login-card {
+        padding: 24px 20px;
+    }
+
+    .register-wrapper {
+        padding: 20px 14px;
+    }
+}
+
+/* ── MOBILE ── */
+@media (max-width: 480px) {
+    .container {
+        padding: 14px 10px;
+    }
+
+    .topbar-inner {
+        padding: 10px 12px;
+    }
+
+    .brand {
+        font-size: 1rem;
+    }
+
+    .brand span {
+        display: none;
+    }
+
+    .page-head {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .page-head h1 {
+        font-size: 1.2rem;
+    }
+
+    .stat-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+    }
+
+    .stat {
+        padding: 12px 8px;
+    }
+
+    .stat-value {
+        font-size: 1.3rem;
+    }
+
+    .stat-label {
+        font-size: 0.78rem;
+    }
+
+    /* ── Tables → stacked cards ── */
+    .table-wrap {
+        border: none;
+        background: none;
+    }
+
+    .table-wrap table,
+    .table-wrap table thead {
+        display: none;
+    }
+
+    .table-wrap table,
+    .table-wrap tbody,
+    .table-wrap tr,
+    .table-wrap td {
+        display: block;
+    }
+
+    .table-wrap tbody {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .table-wrap tr {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .table-wrap td {
+        padding: 0;
+        border-bottom: none;
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: 10px;
+        font-size: 0.88rem;
+    }
+
+    .table-wrap td::before {
+        content: attr(data-label);
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--text-muted);
+        white-space: nowrap;
+        min-width: 100px;
+    }
+
+    .table-wrap td.cell-truncate {
+        max-width: none;
+        overflow: visible;
+        white-space: normal;
+    }
+
+    .table-wrap .empty {
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        background: var(--card-bg);
+    }
+
+    .detail-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .form-card {
+        padding: 16px;
+    }
+
+    .detail-card {
+        padding: 16px;
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
+
+    .form-actions .btn {
+        width: 100%;
+    }
+
+    .login-wrapper {
+        padding: 12px;
+    }
+
+    .login-card {
+        padding: 20px 16px;
+    }
+
+    .login-title {
+        font-size: 1.2rem;
+    }
+
+    .btn {
+        padding: 10px 14px;
+    }
+
+    .btn-sm {
+        padding: 8px 12px;
+    }
+
+    .mentor-head {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+    }
+
+    .card {
+        padding: 14px;
+    }
+
+    .filter-bar {
+        padding: 12px;
+    }
+
+    .alert {
+        padding: 10px 12px;
+        font-size: 0.85rem;
+    }
+
+    .form-section {
+        font-size: 0.88rem;
+    }
+}
